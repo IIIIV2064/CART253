@@ -30,7 +30,6 @@
 
 function setup() {
     createCanvas(bg.w,bg.h);
-    noStroke();
     noCursor();
 
     //set the value ONCE at the start
@@ -42,6 +41,13 @@ function draw() {
 
     background(bg.r,bg.g,bg.b);
 
+    //static
+    for( let pts =0; pts<=1000; pts++){
+
+        stroke('white');
+        point(random(bg.w),random(bg.h));
+        };
+
     //move and draw covid
     cov.x=cov.x+cov.speed;
       if(cov.x>=bg.w){
@@ -51,10 +57,12 @@ function draw() {
         if(cov.speed>=30){cov.speed=30};
       };
 
+    noStroke();
     fill(cov.r,0,0);
     ellipse(cov.x,cov.y,cov.size,cov.size);
 
     //draw ME!
+    noStroke();
     fill(me.rgb,me.rgb,me.rgb);
     ellipse(mouseX,mouseY,me.size,me.size);
 
@@ -71,16 +79,4 @@ function draw() {
     };
 
     console.log(d);
-    };
-
-
-function point(){
-  for( let pts =0; pts<=1000; pts++){
-    
-      stroke(255);
-      point(random(cov.w),random(cov.h));
-
-  }
-
-
-};
+    }
