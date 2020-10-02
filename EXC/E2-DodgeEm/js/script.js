@@ -31,7 +31,11 @@
 
   score = 0;
 
+  let virus;
 
+function preload(){
+  virus = loadImage('assets/images/coof.png');
+}
 
 function setup() {
     createCanvas(bg.w,bg.h);
@@ -111,6 +115,8 @@ function draw() {
     noStroke();
     fill(me.rgb,me.rgb,me.rgb);
     ellipse(me.x,me.y,me.size);
+
+    image(virus,cov.x-cov.size/2-15,cov.y-cov.size/2-15,cov.size+30,cov.size+30);
 
     //does it touch?
 
