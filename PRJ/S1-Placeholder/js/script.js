@@ -4,6 +4,7 @@ Zhao
 
 Using the security cam and watch over something.. I guess
 **************************************************/
+"use strict";
 
 // Creating the objects
 
@@ -46,40 +47,78 @@ let lens ={
   alpha:200,
 };
 
-let inv ={
+let light ={
+  x:0,
+  y:0,
+
+  size:200,
+
+  c:250,
+
+
+};
+
+let invader ={
   x:0,
   y:0,
 
   size:50,
 
-  c:250,
+  c:0,
+  alpha:0,
   speed:5,
 };
 
+let cursor ={
+  x:bg.w/2,
+  y:bg.h/2,
+
+  speed:10,
+};
+
 let d=0;
-inputMode = 'mouse'
-state = 'title'
-hp = 10;
+let inputMode = 'mouse';
+let state = 'title'
+let hp = 10;
+
+//fixed positions
+
 
 // basic starup
+
+function preload(){
+
+
+};
+
 function setup() {
         createCanvas(bg.w, bg.h);
 
-        inv.y = random(bg.h);
-}
+        invader.y = random(bg.h);
+};
 
-// controls
+// controls option
 function keyPressed() {
-      if(state === 'title'){state = 'game'}
+      if(state === 'title'){state = 'game'; inputMode = 'key'}
+};
+
+function doubleClicked(){
+      if(state === 'title'){state = 'game'; inputMode = 'mouse'}
 };
 
 // create the visuals
-function draw() {
-        //refresh background
-        background(bg.r, bg.g, bg.b);
+function draw() { //state checking and state changing
 
+        background(bg.r, bg.g, bg.b);  //refresh background
 
-        //draw selected state
+        if(inputMode === 'mouse'){ // use mouse to control the camera
+          cursor.x = mouseX;
+          cursor.y = mouseY;
+
+        }else if(inputMode === 'key'){ // use keyboard to control the camera (hard)
+          keyControl();
+        };
+
         if (state === 'title') {
           title();
         }
@@ -90,18 +129,81 @@ function draw() {
           end();
         };
 
+        //result check
+        if (hp <= 0){
+          state = 'end'
+        }
 };
 
-//working part of the game
-function game() {
 
-  //generate camera
-    //lens movement (tracking + size change)
-      lens.x=map(mouseX,0,bg.w,base.x-base.w/2,base.x+base.w/2);
-      lens.y=map(mouseY,0,bg.h,casing.y,casing.y+casing.size/2);
+function game() { //working part of game
 
 
-    //draw the camera
+      drawLight(); //draw light first so it appears below camera
+
+      drawCamera();
+
+      drawInvader();
+
+
+      //interaction with invader
+      //reaching the end
+          if(invader.x == bg.w ){
+            resetInvaderPos(); //reset position
+            hp --;
+          };
+
+      //cursor meets invader
+        d = int(dist(cursor.x,cursor.y,invader.x,invader.y));
+
+        if (d <= invader.size + 100){
+          invader.alpha = 500; //make the inv more visible when in proximity of spotlight
+        }else{
+          invader.alpha = 100; //make less visible outside of spotlight
+        };
+
+        if (mouseIsPressed && d <= invader.size){
+            resetInvaderPos();
+        };
+
+
+        console.log(inputMode)
+};
+// control scheme for keyboard
+  function keyControl(){
+        if (keyIsDown(LEFT_ARROW)){
+            cursor.x -= cursor.speed
+        };
+        if (keyIsDown(RIGHT_ARROW)){
+            cursor.x += cursor.speed
+        };
+        if (keyIsDown(UP_ARROW)){
+            cursor.y -= cursor.speed
+        };
+        if (keyIsDown(DOWN_ARROW)){
+            cursor.y += cursor.speed
+        };
+
+  };
+
+
+//object creations
+  function drawCamera(){     //generate the camera
+
+      //lens movement (tracking + size change WIP)
+      lens.x=map(cursor.x,0,bg.w,base.x-base.w/2,base.x+base.w/2)
+      lens.x=constrain(lens.x,base.x-base.w/2,base.x+base.w/2)
+
+      lens.y=map(cursor.y,0,bg.h,casing.y,casing.y+casing.size/2)
+      lens.y=constrain(lens.y,casing.y,casing.y+casing.size/2+lens.size/2);
+
+      let lensZoom = int(dist(lens.x,lens.y,cursor.x,cursor.y));
+
+      lens.size = map(lensZoom,0,800,20,60)
+
+      console.log(lensZoom)
+
+      //draw the camera
       push();
 
         noStroke();
@@ -124,62 +226,69 @@ function game() {
         text('HP '+hp+'/10',bg.w/2,40)
 
       pop();
+  };
 
-  //generate invader
+  function drawLight(){      //generate spotlight
+      push();
+
+        noStroke();
+
+        fill(light.c);
+        ellipse(cursor.x,cursor.y,light.size)
+
+      pop();
+  };
+
+  function drawInvader(){   //generate Invader
+
     //invader movement
 
-      inv.x += inv.speed;
-      inv.y = constrain(inv.y,casing.y+casing.size,bg.h);
+      invader.x += invader.speed;
+      invader.y = constrain(invader.y,casing.y+casing.size,bg.h); // so it oonly spawns underneeth camera
 
     //draw invader
       push();
 
         noStroke();
-        fill(inv.c,50);
-        ellipse(inv.x,inv.y,inv.size);
+        fill(invader.c,invader.alpha);
+        ellipse(invader.x,invader.y,invader.size);
 
 
       pop();
+  };
 
-
-  //interaction with invader
-      //reaching the end
-          if(inv.x == bg.w ){
-            inv.x = 0;
-            inv.y = random(bg.h);
-            hp --;
-          };
-
-      //cursor & inv
-       d = int(dist(mouseX,mouseY,inv.x,inv.y));
-
-      console.log(d)
-
-    if (keyIsPressed && d <= inv.size){
-                 inv.x = 0;
-          inv.y = random(bg.h);
-        };
-
-};
-
-
-
+  //reactions to interactions
+  function resetInvaderPos(){
+          invader.x = 0;
+          invader.y = random(bg.h);
+  };
 
 
   // title screen & end screen
   function title() {
-          fill(250);
+      push();
+          fill(250,0,0);
           textAlign(CENTER);
           textSize(50);
-          text('PRESS ANY KEY',bg.w/2,bg.h/2);
+          textStyle(BOLDITALIC);
+
+          text('SPOT THE INTRUDER',bg.w/2,bg.h/3);
+
+          fill(200);
+          textSize(25);
+          text('DOUBLECLICK TO USE MOUSE CONTROL (EASY) \n Mouse to Move and Click to Target',bg.w/2,bg.h*0.65);
+          text('PRESS ANY KEY TO USE KEYBOARD CONTROL (HARD) \n Arrow Keys to Move and Space to Target',bg.w/2,bg.h*0.85);
+      pop();
   };
 
   function end() {
-          bg.g = 0;
-          bg.b = 0;
-
-          fill(250);
+      push();
+          fill(250,0,0);
           textAlign(CENTER);
           textSize(50);
+          textStyle(BOLDITALIC);
+
           text('THEY GOT AWAY',bg.w/2,bg.h/2)
+     pop();
+
   };
