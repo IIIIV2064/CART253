@@ -134,11 +134,11 @@ function setup() {
 
 // controls option
 function keyPressed() {
-      if(state === 'title'){state = 'game'; inputMode = 'key'}
+        if(state === 'title'){state = 'game'; inputMode = 'key'}
 };
 
 function doubleClicked(){
-      if(state === 'title'){state = 'game'; inputMode = 'mouse'}
+        if(state === 'title'){state = 'game'; inputMode = 'mouse'}
 };
 
 
@@ -236,13 +236,13 @@ function game() { //working part of game
 
   function difficultyModifier(){ // make the gameplay less same-ish
 
-        if(score <= 2){
+        if(score <= 5){
             light.size = 400
 
-        }else if( 2 < score && score <= 4){
+        }else if( 5 < score && score <= 10){
             light.size = 200
 
-        }else if( 4 < score ){
+        }else if( 10 < score ){
             invader.speed = 7
         };
 
