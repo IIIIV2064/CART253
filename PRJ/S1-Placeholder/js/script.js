@@ -60,7 +60,7 @@ let lens ={
   size:40,
 
   c:250,
-  alpha:200,
+  alpha:100,
 };
 
 let light ={
@@ -92,7 +92,7 @@ let cursor ={
   speed:10,
 };
 
-//few parameters
+// few parameters
 
 let d=0;
 let hp = 10;
@@ -105,16 +105,24 @@ let targeted = 'false';
 let cross;
 let inv;
 let icon;
+let oofSFX;
+let yeetSFX;
 
 // fixed positions
 
+let borderXL = base.x - base.w/2 + lens.size/2;
+let borderXR = base.x + base.w/2 - lens.size/2;
+let borderYT = casing.y
+let borderYB = casing.y + casing.size/2 - lens.size/2;
 
 //-----------------------------Setup-----------------------------//
 
 function preload(){
         cross = loadImage('assets/images/Rcross.png');
         inv = loadImage('assets/images/Tinvader.png');
-        icon = loadImage('assets/images/Yinvader.png')
+        icon = loadImage('assets/images/Yinvader.png');
+        oofSFX = loadSound('assets/sounds/oof.wav');
+        yeetSFX = loadSound('assets/sounds/yeet.wav');
 };
 
 function setup() {
@@ -187,6 +195,7 @@ function game() { //working part of game
 
 // LOGIC ENDS HERE //
 
+
 //-----------------------------Mechanics related-----------------------------//
 
   function mouseControl(){ // if player use mouse input
@@ -231,7 +240,7 @@ function game() { //working part of game
             light.size = 400
 
         }else if( 2 < score && score <= 4){
-            light.size = 300
+            light.size = 200
 
         }else if( 4 < score ){
             invader.speed = 7
@@ -253,9 +262,11 @@ function game() { //working part of game
         if(invader.x >= bg.w ){
             resetInvaderPos(); // when invader reach end w/o interaction
             hp --;
+            oofSFX.play();
         }else if( targeted === 'true' && d <= invader.size){ //when player hit the invader
             resetInvaderPos();
-            score++
+            score++;
+            yeetSFX.play();
         };
 
         console.log(score)
@@ -272,16 +283,19 @@ function game() { //working part of game
 
   function drawCamera(){     //generate the camera
 
-      //lens movement (tracking + size change WIP)
-      lens.x=map(cursor.x,0,bg.w,base.x-base.w/2,base.x+base.w/2)
-      lens.x=constrain(lens.x,base.x-base.w/2,base.x+base.w/2)
-
-      lens.y=map(cursor.y,0,bg.h,casing.y,casing.y+casing.size/2)
-      lens.y=constrain(lens.y,casing.y,casing.y+casing.size/2+lens.size/2);
+      //lens movement (tracking + size change)
 
       let lensZoom = int(dist(lens.x,lens.y,cursor.x,cursor.y));
 
       lens.size = map(lensZoom,0,800,20,60)
+
+      lens.x=map(cursor.x,0,bg.w,borderXL,borderXR)
+      lens.x=constrain(lens.x,borderXL,borderXR)
+
+      lens.y=map(cursor.y,0,bg.h,borderYT,borderYB)
+      lens.y=constrain(lens.y,borderYT,borderYB);
+
+
 
       //draw the camera
       push();
