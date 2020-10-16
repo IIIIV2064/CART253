@@ -3,6 +3,7 @@ Simulation 01
 Zhao
 
 Using the security cam and watch over something.. I guess
+Used a few non varibale numbers to specify anchors of images & colour of titles, I'm sorry :(
 **************************************************/
 "use strict";
 
@@ -25,6 +26,21 @@ let base ={
   h:100,
 
   c:250,
+};
+
+let hpbar ={
+  x:bg.w/2,
+  y:25,
+
+  w:180,
+  h:30,
+
+  strokew:0.5,
+  strokec:0,
+
+  c:250,
+  hpc:230,
+  hpw:180,
 };
 
 let casing ={
@@ -64,7 +80,7 @@ let invader ={
 
   size:50,
 
-  c:0,
+  c:255,
   alpha:0,
   speed:5,
 };
@@ -76,23 +92,34 @@ let cursor ={
   speed:10,
 };
 
+//few parameters
+
 let d=0;
-let inputMode = 'mouse';
-let state = 'title'
 let hp = 10;
+let score =0;
 
-//fixed positions
+let inputMode = 'mouse';
+let state = 'title';
+let targeted = 'false';
+
+let cross;
+let inv;
+let icon;
+
+// fixed positions
 
 
-// basic starup
+//-----------------------------Setup-----------------------------//
 
 function preload(){
-
-
+        cross = loadImage('assets/images/Rcross.png');
+        inv = loadImage('assets/images/Tinvader.png');
+        icon = loadImage('assets/images/Yinvader.png')
 };
 
 function setup() {
         createCanvas(bg.w, bg.h);
+        noCursor();
 
         invader.y = random(bg.h);
 };
@@ -106,18 +133,22 @@ function doubleClicked(){
       if(state === 'title'){state = 'game'; inputMode = 'mouse'}
 };
 
-// create the visuals
+
+
+//-----------------------------Game Body-----------------------------//
+
 function draw() { //state checking and state changing
 
         background(bg.r, bg.g, bg.b);  //refresh background
 
         if(inputMode === 'mouse'){ // use mouse to control the camera
-          cursor.x = mouseX;
-          cursor.y = mouseY;
+          mouseControl();
 
         }else if(inputMode === 'key'){ // use keyboard to control the camera (hard)
           keyControl();
         };
+
+
 
         if (state === 'title') {
           title();
@@ -133,44 +164,45 @@ function draw() { //state checking and state changing
         if (hp <= 0){
           state = 'end'
         }
+
 };
 
 
 function game() { //working part of game
 
+      difficultyModifier();
 
-      drawLight(); //draw light first so it appears below camera
-
-      drawCamera();
+      drawLight(); //draw light so it appears below camera
 
       drawInvader();
 
+      drawCamera();
 
-      //interaction with invader
-      //reaching the end
-          if(invader.x == bg.w ){
-            resetInvaderPos(); //reset position
-            hp --;
-          };
+      interactionCheck();
 
-      //cursor meets invader
-        d = int(dist(cursor.x,cursor.y,invader.x,invader.y));
-
-        if (d <= invader.size + 100){
-          invader.alpha = 500; //make the inv more visible when in proximity of spotlight
-        }else{
-          invader.alpha = 100; //make less visible outside of spotlight
-        };
-
-        if (mouseIsPressed && d <= invader.size){
-            resetInvaderPos();
-        };
+      drawHP();
 
 
-        console.log(inputMode)
 };
-// control scheme for keyboard
-  function keyControl(){
+
+// LOGIC ENDS HERE //
+
+//-----------------------------Mechanics related-----------------------------//
+
+  function mouseControl(){ // if player use mouse input
+        cursor.x = mouseX;
+        cursor.y = mouseY;
+
+        if(mouseIsPressed){
+          targeted = 'true'; //detect if player is actively targeting the invader ( w/ mouse)
+        }else{
+          targeted = 'false';
+        }
+
+  };
+
+
+  function keyControl(){ // if player use keyboardinput
         if (keyIsDown(LEFT_ARROW)){
             cursor.x -= cursor.speed
         };
@@ -184,10 +216,60 @@ function game() { //working part of game
             cursor.y += cursor.speed
         };
 
+        if(keyIsDown(32)){
+          targeted = 'true'; //detect if player is actively targeting the invader ( w/ spacebar)
+        }else{
+          targeted = 'false';
+        }
+
+
+  };
+
+  function difficultyModifier(){ // make the gameplay less same-ish
+
+        if(score <= 2){
+            light.size = 400
+
+        }else if( 2 < score && score <= 4){
+            light.size = 300
+
+        }else if( 4 < score ){
+            invader.speed = 7
+        };
+
+  };
+
+  function interactionCheck(){
+        d = int(dist(cursor.x,cursor.y,invader.x,invader.y));
+
+        if (d <= light.size/2 + invader.size/2){
+            invader.alpha = 500; //make the inv more visible when in proximity of spotlight
+          }else{
+            invader.alpha = 20; //make less visible outside of spotlight
+          };
+
+
+
+        if(invader.x >= bg.w ){
+            resetInvaderPos(); // when invader reach end w/o interaction
+            hp --;
+        }else if( targeted === 'true' && d <= invader.size){ //when player hit the invader
+            resetInvaderPos();
+            score++
+        };
+
+        console.log(score)
   };
 
 
-//object creations
+  function resetInvaderPos(){
+        invader.x = 0;
+        invader.y = random(bg.h);
+  };
+
+
+//------------------------------Object creations------------------------------//
+
   function drawCamera(){     //generate the camera
 
       //lens movement (tracking + size change WIP)
@@ -200,8 +282,6 @@ function game() { //working part of game
       let lensZoom = int(dist(lens.x,lens.y,cursor.x,cursor.y));
 
       lens.size = map(lensZoom,0,800,20,60)
-
-      console.log(lensZoom)
 
       //draw the camera
       push();
@@ -219,11 +299,6 @@ function game() { //working part of game
         fill(base.c);
         rect(base.x,base.y,base.w,base.h);
 
-        //text
-        fill(0);
-        textAlign(CENTER);
-        textSize(30);
-        text('HP '+hp+'/10',bg.w/2,40)
 
       pop();
   };
@@ -235,6 +310,8 @@ function game() { //working part of game
 
         fill(light.c);
         ellipse(cursor.x,cursor.y,light.size)
+
+        image(cross,cursor.x-25,cursor.y-3); //input crosshair image,
 
       pop();
   };
@@ -249,35 +326,58 @@ function game() { //working part of game
     //draw invader
       push();
 
-        noStroke();
-        fill(invader.c,invader.alpha);
-        ellipse(invader.x,invader.y,invader.size);
-
+        tint(invader.c,invader.alpha);
+        image(inv,invader.x-25,invader.y-25,invader.size,invader.size); //input invader image,
 
       pop();
   };
 
-  //reactions to interactions
-  function resetInvaderPos(){
-          invader.x = 0;
-          invader.y = random(bg.h);
+  function drawHP(){ //generate hp bar
+
+      hpbar.hpw = hp*18;
+
+      push();
+
+        stroke(hpbar.strokec) //contour
+        strokeWeight(hpbar.strokew)
+
+        rectMode(CENTER);
+        noFill();
+        rect(hpbar.x,hpbar.y,hpbar.w,hpbar.h);
+
+        push();
+
+          noStroke(); //actual dynamic hpbar
+          fill(0,hpbar.c,0)
+          rect(hpbar.x,hpbar.y,hpbar.hpw,hpbar.h);
+
+        pop();
+
+      pop();
+
+
   };
 
+//------------------------------title screen & end screen------------------------------//
 
-  // title screen & end screen
   function title() {
       push();
-          fill(250,0,0);
+          fill(255,182,0);
           textAlign(CENTER);
           textSize(50);
           textStyle(BOLDITALIC);
 
-          text('SPOT THE INTRUDER',bg.w/2,bg.h/3);
+          text('SPOT THE INTRUDER',bg.w*0.45,bg.h/3);
 
-          fill(200);
-          textSize(25);
-          text('DOUBLECLICK TO USE MOUSE CONTROL (EASY) \n Mouse to Move and Click to Target',bg.w/2,bg.h*0.65);
-          text('PRESS ANY KEY TO USE KEYBOARD CONTROL (HARD) \n Arrow Keys to Move and Space to Target',bg.w/2,bg.h*0.85);
+          push();
+            fill(200);
+            textSize(20);
+            text('DOUBLECLICK TO USE MOUSE CONTROL (EASY) \n > Use Mouse to Move and Click to Target',bg.w/2,bg.h*0.65);
+            text('PRESS ANY KEY TO USE KEYBOARD CONTROL (HARD) \n > Use Arrow Keys to Move and Space to Target',bg.w/2,bg.h*0.85);
+          pop();
+
+          image(icon,bg.w*0.7,bg.h*0.25,invader.size*2,invader.size*2);
+
       pop();
   };
 
@@ -288,7 +388,13 @@ function game() { //working part of game
           textSize(50);
           textStyle(BOLDITALIC);
 
-          text('THEY GOT AWAY',bg.w/2,bg.h/2)
+          text('THEY GOT IN',bg.w/2,bg.h/2)
+
+          push();
+            textSize(25)
+            text('You caught ' + score + ' Intruders',bg.w/2,bg.h*0.6)
+          pop();
+
      pop();
 
   };
