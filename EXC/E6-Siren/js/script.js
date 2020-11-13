@@ -15,31 +15,31 @@ Might cause inconsistent performance.
 **************************************************/
 
 "use strict";
-//-----------------------------Objects-----------------------------//
+//-----------------------------Variables & Objects-----------------------------//
 
 let state = 'main';
 let boomCount = 0;
 
 let earth, mapTexture, foont; // earth's model and texture + the font to be used
 
-let explosionSFX, explostionDetector;
+let explosionSFX, explostionDetector; // sound related objs
 
 //-----------------------------Setups-----------------------------//
 function preload(){
-  foont = loadFont('assets/CASLON.ttf')
-  mapTexture = loadImage('assets/images/map.png')
+        foont = loadFont('assets/CASLON.ttf')
+        mapTexture = loadImage('assets/images/map.png')
+
 }
 
 
 function setup() {
-  createCanvas(1000, 750,WEBGL);
+        createCanvas(1000, 750,WEBGL);
 
-  earth = new Globe(); //create the globe
+        earth = new Globe(); //create the globe
 
-  explosionSFX = new SFX(); //create the sound effect
+        explosionSFX = new SFX(); //create the sound effect
 
-
-  explostionDetector = new p5.Amplitude(); //create a detector of sound level
+        explostionDetector = new p5.Amplitude(); //create a detector of sound level
 
 }
 
@@ -111,7 +111,7 @@ function mousePressed(){
             //not exactly how it'll work in the final version, but here
             //the player will trigger the bombs for easier demonstration
             boomCount = boomCount + 1;
-            console.log(boomCount);
+            console.log('boomCount:' + boomCount);
 
       }else if( state === 'end'){ // reset
             state ='main';
@@ -124,10 +124,11 @@ function mousePressed(){
 
 
 //-----------------------------Visual Functions-----------------------------//
+
 function explosionVFX(){ //make the thickness of the line change accroding to the *boom*
 
     let level = explostionDetector.getLevel();
     earth.strokeThick = map(level,0.2,1,0.2,2,true);
-    console.log(level)
+    console.log('amp:' + level)
 
 }
