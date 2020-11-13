@@ -1,48 +1,34 @@
-class Explosion {
+class Explosion{
 
 constructor(){ //setting up base values for the globe
 
-    this.x = 500;
-    this.y = 500;
+    this.explosion;
 
-    this.size = 200;
+    this.explosion = new p5.Oscillator('sine');
 
-    this.fillColor = {
-      r:0,
-      g:150,
-      b:150,
-    }
-    this.strokeColor = {
-      r:0,
-      g:0,
-      b:0,
-    };
-    this.strokeThick;
 }
 
-display(){
-    push();
-      fill(this.fillColor.r,this.fillColor.g,this.fillColor.b);
-      stroke(this.strokeColor.r,this.strokeColor.g,this.strokeColor.b);
-      strokeWeight(this.strokeThick);
+sfxGenerator(){
 
-      ellipse(this.x,this.y,this.size)
-    pop();
+    let freq = 100;
+        if( boomCount == 5){ //when humans are gone
+          freq = 300;
+        }
+    let amp = 1;
+
+    this.explosion.freq(freq);
+    this.explosion.amp(amp);
+
 }
 
-animation(){
-
-
+sfxStop(){
+  this.explosion.stop();
 }
 
 mousePressed(){
-
-    this.x = mouseX;
-    this.y = mouseY;
-
-    this.animation();
-    this.display();
-
+    this.explosion.start();
+    this.explosion.stop(0.5);
 }
+
 
 };

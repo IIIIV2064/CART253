@@ -12,7 +12,7 @@ let boomCount = 0;
 
 let earth, mapTexture, foont; // earth's model and texture + the font to be used
 
-let explosion,explosionSFX; // everything related to the explosion effect
+let explosionSFX;
 
 //-----------------------------Setups-----------------------------//
 function preload(){
@@ -22,13 +22,12 @@ function preload(){
 
 
 function setup() {
-  createCanvas(1000, 750, WEBGL);
+  createCanvas(1000, 750,WEBGL);
 
   earth = new Globe(); //create the globe
 
-  explosion = new Explosion();
+  explosionSFX = new Explosion();
 
-  explosionSFX = new p5.Oscillator('sine'); // create the explosionSFX
 }
 
 //-----------------------------Running Body-----------------------------//
@@ -56,13 +55,14 @@ function mainScreen(){ //display the main screen
         textFont(foont);
         text('click to see earth',0,0);
       pop();
+
 };
 
 function simScreen(){
 
-      earth.display(); //show the globe and make it spin
-      sfxgenerator();
-      boomCounter();
+      earth.display(); //show the globe
+      explosionSFX.sfxGenerator(); //
+      boomCounter(); //count the # of boom
 
 };
 
@@ -75,24 +75,6 @@ function endScreen(){ //display the end screen
         text('POOF, its gone',0,0);
       pop();
 };
-
-//---------------------Mechanical Functions(SoundRelated)---------------------//
-
-
-function sfxgenerator(){ //generate the sound that will represent the explosion
-      let freq = 100;
-          if( boomCount == 5){
-            freq = 300;
-          }
-      let amp = 1;
-
-      explosionSFX.freq(freq);
-      explosionSFX.amp(amp);
-};
-
-function stopSFX(){
-      explosionSFX.stop();
-}
 
 //---------------------Mechanical Functions---------------------//
 
@@ -108,23 +90,21 @@ function mousePressed(){
       if( state === 'main'){ //click to go into the simulation
             state = 'earth'
       }else if( state === 'earth'){
-            explosion.mousePressed();
-            explosion.display();
-            
-            explosionSFX.start();
-            setTimeout(stopSFX,500); //stop the explosionSFX after 0.5 sec
-            // really want to know if there's a more efficient way of dong this
+
+            earth.strokeThick = 2;
+            explosionSFX.mousePressed();
 
             //not exactly how it'll work in the final version, but here
             //the player will trigger the bombs for easier demonstration
             boomCount = boomCount + 1;
-
             console.log(boomCount);
+
       }else if( state === 'end'){ // turn back to title screen
             state ='main';
             boomCount = 0;
       }
 
 };
+
 
 //-----------------------------Visual Functions-----------------------------//

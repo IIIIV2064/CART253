@@ -20,7 +20,6 @@ constructor(){ //setting up base values for the globe
 
 }
 
-
 display(){
 
   this.sphereSize = map(mouseY,height*0.25,height*0.75,100,400,true) // decide the "zoom" level according to mouse Y position
@@ -40,5 +39,7 @@ display(){
 
 
 }
+
+
 
 }
