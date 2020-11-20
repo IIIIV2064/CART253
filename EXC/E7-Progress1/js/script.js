@@ -1,6 +1,11 @@
 /**************************************************
 Zhao's Prototype
 Here are some more attempts at adding flavors to the movement of it all.
+Im experimenting with a dragging based viewing system; isntead of simply moving
+the mouse, the user now drags the mouse for a distance to move the globe.
+My intend is that the speed/ amount the globe rotates depends on the distance
+the mouse is dragge (aka giving it a velocity that slows down overtime).
+As you can see its not quite there yet, but I think i'm onto something.
 
 Sorry I wasn't able to do much this week;
 I was a bit tight on the schedule and spend lots of time experimenting with
@@ -100,7 +105,7 @@ function mouseClicked(){
       if( state === 'main'){ //click to go into the simulation
             state = 'earth'
       }else if( state === 'earth'){
-          //  explosionSFX.bombDrop();
+          //  explosionSFX.bombDrop(); i disabled the
       }else if( state === 'end'){ // reset
           resetWorld();
       }

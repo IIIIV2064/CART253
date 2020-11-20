@@ -36,10 +36,10 @@ constructor(){ //setting up base values for the globe
 
 display(){
 
-      this.sphereSize =  constrain(this.zoomLevel,100,400);// decide the "zoom" level according to mouse Y position
+      this.sphereSize =  constrain(this.zoomLevel,100,400);// decide the "zoom" level
 
 
-      rotateY(this.mX.rotation);
+      rotateY(this.mX.rotation); //make it spin!
       rotateX(this.mY.rotation);
 
 
@@ -56,16 +56,27 @@ spin(){
       this.mX.velocity = this.mX.end - this.mX.initial;
       this.mY.velocity = this.mY.end - this.mY.initial;
 
-      if(this.mX.amount < this.mX.velocity){// when rot. to the right AKA velocity is positive 
+      if(this.mX.amount < this.mX.velocity){// when rot. to the right AKA velocity is positive
         this.mX.amount +=1;
         this.mX.rotation += this.rotationRate;
-      }else if()
-
-      if(this.mY.amount != this.mY.velocity){
-        this.mY.amount +=1;
-        this.mY.rotation -= this.rotationRate;
+      }else if(this.mX.amount > this.mX.velocity){// when rot. to the left  AKA velocity is negative
+        this.mX.amount -=1;
+        this.mX.rotation -= this.rotationRate;
+      }else if(this.mX.amount == this.mX.velocity){// when goal is reached, reset (not working as intended)
+        this.mX.rotation = this.mX.rotation;
+        this.mX.amount,this.mX.velocity = 0;
       };
 
+      if(this.mY.amount < this.mY.velocity){
+        this.mY.amount +=1;
+        this.mY.rotation -= this.rotationRate;
+      }else if(this.mY.amount > this.mY.velocity){
+        this.mY.amount -=1;
+        this.mY.rotation += this.rotationRate;
+      }else if(this.mY.amount == this.mX.velocity){
+        this.mX.rotation = this.mX.rotation;
+        this.mX.amount,this.mX.velocity = 0;
+      };
 
 
       console.log(this.mX.amount,this.mX.velocity)
