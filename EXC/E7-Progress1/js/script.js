@@ -68,7 +68,9 @@ function simScreen(){
       explosionSFX.sfxGenerator(); //generate and update values for the SFX
       explosionVFX(); //add visual changes dependent of the exploi
 
+      earth.spin();
       earth.display(); //show the globe
+
 
       boomCounter(); //count the # of boom
 
@@ -93,12 +95,12 @@ function boomCounter(){ //count the number of explosions before humans are gone
 
 };
 
-function mousePressed(){
+function mouseClicked(){
 
       if( state === 'main'){ //click to go into the simulation
             state = 'earth'
       }else if( state === 'earth'){
-            explosionSFX.mousePressed();
+          //  explosionSFX.bombDrop();
       }else if( state === 'end'){ // reset
           resetWorld();
       }
@@ -115,10 +117,25 @@ function resetWorld(){
 
 //-----------------------------Visual Functions-----------------------------//
 
+function mousePressed(){
+      earth.mX.initial = mouseX;
+      earth.mY.initial = mouseY;
+};
+
+function mouseReleased(){
+      earth.mX.end = mouseX;
+      earth.mY.end = mouseY;
+};
+
+function mouseWheel(event){
+      earth.zoomLevel -= event.delta;
+
+      console.log(earth.zoomLevel)
+};
+
 function explosionVFX(){ //make the thickness of the line change accroding to the *boom*
 
-    let level = explostionDetector.getLevel();
-    earth.strokeThick = map(level,0.2,1,0.2,2,true);
-    console.log('amp:' + level)
+      let level = explostionDetector.getLevel();
+      earth.strokeThick = map(level,0.2,1,0.2,2,true);
 
 }

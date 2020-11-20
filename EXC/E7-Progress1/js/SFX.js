@@ -33,7 +33,7 @@ sfxGenerator(){ //input the exact values for the oscillator
 }
 
 
-mousePressed(){ //play the oscillator on click (aka drop the bombs)
+bombDrop(){ //play the oscillator on click (aka drop the bombs)
 
       if(this.explosionCount == 0){ //before the first bomb falls, a brief moment of panick
           this.siren.start(); // make siren go off
@@ -43,14 +43,12 @@ mousePressed(){ //play the oscillator on click (aka drop the bombs)
           this.explosion.stop(3.5);
           this.siren.stop(3);
       }else{
+          this.siren.stop(); //make sure siren doesn't bug out
           this.explosion.start();
           this.explosion.stop(0.5);
       }
 
       this.explosionCount +=1;
-      console.log(this.explosionCount);
-
-
 }
 
 
