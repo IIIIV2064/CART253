@@ -105,7 +105,7 @@ function mouseClicked(){
       if( state === 'main'){ //click to go into the simulation
             state = 'earth'
       }else if( state === 'earth'){
-          explosionSFX.bombDrop(); i disabled the
+          explosionSFX.bombDrop(); 
       }else if( state === 'end'){ // reset
           resetWorld();
       }
