@@ -1,4 +1,11 @@
 /**************************************************
+Project 2
+
+This is something, I guess.
+
+
+Until only silence remains...
+
 
 **************************************************/
 
@@ -6,27 +13,40 @@
 //-----------------------------Variables & Objects-----------------------------//
 
 let state = 'main';
+let foont;
+let bgm;
+let level;
 
-let earth, mapTexture, foont; // earth's model and texture + the font to be used
+let earth, mapTexture; //obj related to earth
 
-let explosionSFX, explostionDetector; // sound related objs
+let explosions = [];
+let numExplosion = 1;
+
+let explosionSFX, explosionDetector; // obj related to explosions
 
 //-----------------------------Setups-----------------------------//
-function preload(){
-        foont = loadFont('assets/CASLON.ttf')
-        mapTexture = loadImage('assets/images/map.png')
+function preload(){ //preload extenral assets such as images and musics
+        foont = loadFont('assets/CASLON.ttf');
+        mapTexture = loadImage('assets/map.png');
+        bgm = loadSound('assets/BGM.mp3');
 
 }
 
 
 function setup() {
-        createCanvas(1000, 750,WEBGL);
+        createCanvas(windowWidth, windowHeight,WEBGL);
 
         earth = new Globe(); //create the globe
 
-        explosionSFX = new SFX(); //create the sound effect
+      /*  for( let i=0; i < numExplosion; i++){ //create an array for explosion effects
+          explosions.push(new Explosion);
+        } */
 
-        explostionDetector = new p5.Amplitude(); //create a detector of sound level
+        explosionSFX = new SFX();
+
+        //explosionVFX = new VFX();
+
+        explosionDetector = new p5.Amplitude(); //create a detector of sound level
 
 }
 
@@ -60,57 +80,72 @@ function mainScreen(){ //display the main screen
 
 function simScreen(){
 
-      explosionSFX.sfxGenerator(); //generate and update values for the SFX
-      explosionVFX(); //add visual changes dependent of the exploi
-
       earth.spin();
       earth.display(); //show the globe
+      audioTrigger();
 
+    /*  for( let i=0; i < explosions.length; i++){
+        let explosionVFX = explosions[i];
+        explosionVFX.display();
+      } */
 
-      boomCounter(); //count the # of boom
 
 };
 
 function endScreen(){ //display the end screen
+      bgm.stop();
+
       push();
         textAlign(CENTER);
         fill(200);
         textFont(foont);
         textSize(20);
-        text('POOF, its gone',0,0);
+        text('now, its gone',0,0);
       pop();
 };
 
 //---------------------Mechanical Functions---------------------//
 
-function boomCounter(){ //count the number of explosions before humans are gone
-      if(explosionSFX.explosionCount == 5){
-          state = 'end'
-      }
+function resetWorld(){
+        state ='main';
+        earth.strokeColor = {r:0,g:0,b:180}
+        explosions.explosionCount = 0;
+};
+
+function audioTrigger(){
+      explosionDetector.setInput(bgm);
+
+      level = explosionDetector.getLevel();
+      earth.strokeThick = map(level,0,1,0.2,2,true);
+
+      if(level > 0.05){
+        bombDropping();
+      };
+      console.log(level);
 
 };
+
+function bombDropping(){
+      explosionSFX.bombSound();
+};
+
+//-----------------------------User Inputs-----------------------------//
 
 function mouseClicked(){
 
       if( state === 'main'){ //click to go into the simulation
-            state = 'earth'
+          state = 'earth'
       }else if( state === 'earth'){
-          explosionSFX.bombDrop();
+          if(bgm.isPlaying()){ //click to start the music.. and the downfall
+            bgm.playMode('sustain');
+          }else{
+            bgm.play();
+          };
       }else if( state === 'end'){ // reset
           resetWorld();
       }
 
 };
-
-function resetWorld(){
-        state ='main';
-        earth.strokeColor = {r:0,g:0,b:180}
-        explosionSFX.siren.stop();
-        explosionSFX.explosionCount = 0;
-};
-
-
-//-----------------------------Visual Functions-----------------------------//
 
 function mousePressed(){
       earth.mX.initial = mouseX;
@@ -124,13 +159,5 @@ function mouseReleased(){
 
 function mouseWheel(event){
       earth.zoomLevel -= event.delta;
-
       console.log(earth.zoomLevel)
 };
-
-function explosionVFX(){ //make the thickness of the line change accroding to the *boom*
-
-      let level = explostionDetector.getLevel();
-      earth.strokeThick = map(level,0.2,1,0.2,2,true);
-
-}

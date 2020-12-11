@@ -1,3 +1,8 @@
+/*
+class for the primary earth,
+also in charge of the rotation mechanics
+*/
+
 class Globe{
 
 constructor(){ //setting up base values for the globe
@@ -78,8 +83,6 @@ spin(){
         this.mX.amount,this.mX.velocity = 0;
       };
 
-
-      console.log(this.mX.amount,this.mX.velocity)
 
 }
 
