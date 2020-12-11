@@ -18,11 +18,11 @@ constructor(){ //setting up base values for the globe
 
 
 
-      this.scaledSize;
+      this.scaledSize; //size after zoom scales
       this.animationRate = 5;
       this.rotationRate = 0.005;
 
-      this.mX ={
+      this.mX ={ //parameters for the mouse drag on X
         initial:0,
         end:0,
         velocity:0,
@@ -30,7 +30,7 @@ constructor(){ //setting up base values for the globe
         rotation:0,
       }
 
-      this.mY ={
+      this.mY ={ //parameters for the mouse drag on Y
         initial:0,
         end:0,
         velocity:0,
@@ -40,12 +40,12 @@ constructor(){ //setting up base values for the globe
 
 }
 
-display(){
+display(){ //generating the globe
 
-      this.scaledSize = this.sphereSize*constrain(scale,0.1,2);
-      this.strokeThick = map(volume,1,6,0.3,5,true);
+      this.scaledSize = this.sphereSize*constrain(scale,0.1,2); //generate the dynamic size
+      this.strokeThick = map(volume,1,6,0.3,5,true); //generate the dynamic line width
 
-      rotateY(this.mX.rotation); //make it spin!
+      rotateY(this.mX.rotation);
       rotateX(this.mY.rotation);
 
 
@@ -53,12 +53,12 @@ display(){
       strokeWeight(this.strokeThick);
       noFill();
 
-      texture(mapTexture); //applying the map texture to the sphere
+      texture(mapTexture);
       sphere(this.scaledSize);
 
 }
 
-spin(){
+spin(){ //inputs for dragging
       this.mX.velocity = this.mX.end - this.mX.initial;
       this.mY.velocity = this.mY.end - this.mY.initial;
 

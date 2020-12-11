@@ -4,7 +4,7 @@ also some other generated sounds
 */
 
 class SFX{
-    constructor(){
+    constructor(){ //seetting parameters for the SFXs
 
           this.explosion = new p5.Oscillator('sine');
 
@@ -15,7 +15,7 @@ class SFX{
 
     }
 
-    bombSound(){
+    bombSound(){ //create the explosion sound effect ( a low thud)
 
           let explosionFreq = 50;
           let explosionAmp = 0.5;
@@ -30,7 +30,7 @@ class SFX{
           this.explosionCount += 1;
     }
 
-    sirenSound(){
+    sirenSound(){ //create the srien sound effect ( an annoying sreech)
 
           this.changeValue = this.changeValue + this.changeRate;
           let sirenFreq = map(sin(this.changeValue),-1,1,2000,2200,true);

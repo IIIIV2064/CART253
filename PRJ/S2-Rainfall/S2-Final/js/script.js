@@ -31,7 +31,7 @@ let exoSFX, exoVFX, explosionDetector; // obj related to explosions
 //-----------------------------Setups-----------------------------//
 function preload(){ //preload extenral assets such as images and musics
         foont = loadFont('assets/CASLON.ttf');
-        mapTexture = loadImage('assets/map.png');
+        mapTexture = loadImage('assets/land.png');
         bgm = loadSound('assets/BGM.mp3');
 
 }
@@ -76,7 +76,6 @@ function mainScreen(){ //display the main screen
         text('click to see earth',0,0);
       pop();
 
-      explosions = [];
 
 };
 
@@ -113,12 +112,15 @@ function endScreen(){ //display the end screen
 //---------------------Mechanical Functions---------------------//
 
 function resetWorld(){ //reset when the simulation ends
+        earth.strokeColor.b = 180;
+        earth.strokeColor.r = 0;
         exoSFX.siren.stop();
+        explosions = [];
+
         state ='main';
 };
 
 function audioTrigger(){
-      level = 0;
       //triggers the explosion when pass a certain treshhold
       //and makes the lines 'vibrate'
 
@@ -129,26 +131,24 @@ function audioTrigger(){
 
       if(volume > 4.5){ // the treshhold
           bombDropping();
-          earth.strokeColor.r = 250;
+          earth.strokeColor.r = 250; // make the earth go red
           earth.strokeColor.b = 0;
       };
 
-      console.log(volume)
+      console.log(level)
 
 };
 
 function bombDropping(){ //setting the explosion in motion
-      exoSFX.bombSound();
-
-      explosions.push(exoVFX);
-
+      exoSFX.bombSound(); //call the sound
+      explosions.push(exoVFX); //call the visual
       exoVFX.boom=true;
 
 
 };
 
 function bombCounting(){ //count how far til the end
-  if(explosions.length >= 10){
+  if(explosions.length >= 1000){
     state = 'end';
   }
   console.log(explosions.length);
@@ -161,10 +161,10 @@ function mouseClicked(){ //main input: mouse click
       if( state === 'main'){ //clicking in main
           state = 'earth'
       }else if( state === 'earth'){
-          if(bgm.isPlaying()){ //click to start the music.. and the downfall
+          if(bgm.isPlaying()){ //no reptetion once music started
             bgm.playMode('sustain');
           }else{
-            bgm.play();
+            bgm.play(); //click to start the music.. and the downfall
           };
       }else if( state === 'end'){ //clicking in end screen to reset
           resetWorld();
