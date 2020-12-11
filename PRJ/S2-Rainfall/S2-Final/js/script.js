@@ -1,28 +1,32 @@
 /**************************************************
-Project 2
+Project 2 - "Rainfall"
+by Yaodongfang Zhao
 
-This is something, I guess.
+This simulation features a sphere that represents Earth
 
-
-Until only silence remains...
-
+Once the user clicks/ starts dragging the Earth around,
+the sequence begins.
+A song will play, and the simulation will react to the song
+by creating *explosions* using SFXs and VFXs.
+The simulation ends when too much explosions happen.
 
 **************************************************/
 
 "use strict";
 //-----------------------------Variables & Objects-----------------------------//
 
-let state = 'main';
-let foont;
-let bgm;
-let level;
+let state = 'main'; // state which the simulation is in
+let foont; //font used
+let bgm; // the music
+
+let volume,level; // var for sound level
+let scale = 1; // var for zoom level
 
 let earth, mapTexture; //obj related to earth
 
-let explosions = [];
-let numExplosion = 1;
+let explosions = []; //array of explosions
 
-let explosionSFX, explosionDetector; // obj related to explosions
+let exoSFX, exoVFX, explosionDetector; // obj related to explosions
 
 //-----------------------------Setups-----------------------------//
 function preload(){ //preload extenral assets such as images and musics
@@ -33,24 +37,20 @@ function preload(){ //preload extenral assets such as images and musics
 }
 
 
-function setup() {
+function setup() { //setup the canvas and the js objects
         createCanvas(windowWidth, windowHeight,WEBGL);
 
         earth = new Globe(); //create the globe
 
-      /*  for( let i=0; i < numExplosion; i++){ //create an array for explosion effects
-          explosions.push(new Explosion);
-        } */
+        exoSFX = new SFX();
 
-        explosionSFX = new SFX();
-
-        //explosionVFX = new VFX();
+        exoVFX = new VFX();
 
         explosionDetector = new p5.Amplitude(); //create a detector of sound level
-
 }
 
 //-----------------------------Running Body-----------------------------//
+
 function draw() {
         background(0) //set background color
 
@@ -78,18 +78,19 @@ function mainScreen(){ //display the main screen
 
 };
 
-function simScreen(){
+function simScreen(){ //display the simulation
 
       earth.spin();
       earth.display(); //show the globe
+
       audioTrigger();
 
-    /*  for( let i=0; i < explosions.length; i++){
-        let explosionVFX = explosions[i];
-        explosionVFX.display();
-      } */
-
-
+      for( let i=0; i < explosions.length; i++){
+          if(exoVFX.boom == true){
+              exoVFX.bombAnimation(explosions[i]);
+              exoVFX.bombVisual(explosions[i]);
+            }
+      }
 };
 
 function endScreen(){ //display the end screen
@@ -106,34 +107,42 @@ function endScreen(){ //display the end screen
 
 //---------------------Mechanical Functions---------------------//
 
-function resetWorld(){
+function resetWorld(){ //reset when the simulation ends
         state ='main';
-        earth.strokeColor = {r:0,g:0,b:180}
-        explosions.explosionCount = 0;
 };
 
 function audioTrigger(){
+      //triggers the explosion when pass a certain treshhold
+      //and makes the lines 'vibrate'
+
       explosionDetector.setInput(bgm);
 
       level = explosionDetector.getLevel();
-      earth.strokeThick = map(level,0,1,0.2,2,true);
+      volume = map(level,0.001,0.2,1,10,true);
 
-      if(level > 0.05){
-        bombDropping();
+      if(volume > 4.5){
+
+          earth.strokeColor.r = 250;
+          earth.strokeColor.b = 0;
       };
-      console.log(level);
+
+      console.log(volume)
 
 };
 
-function bombDropping(){
-      explosionSFX.bombSound();
+function bombDropping(){ //setting the explosion in motion
+      exoSFX.bombSound();
+
+      explosions.push(exoVFX);
+
+      exoVFX.boom=true;
 };
 
 //-----------------------------User Inputs-----------------------------//
 
-function mouseClicked(){
+function mouseClicked(){ //main input: mouse click
 
-      if( state === 'main'){ //click to go into the simulation
+      if( state === 'main'){ //clicking in main
           state = 'earth'
       }else if( state === 'earth'){
           if(bgm.isPlaying()){ //click to start the music.. and the downfall
@@ -141,13 +150,14 @@ function mouseClicked(){
           }else{
             bgm.play();
           };
-      }else if( state === 'end'){ // reset
+                    bombDropping();
+      }else if( state === 'end'){ //clicking in end screen to reset
           resetWorld();
       }
 
 };
 
-function mousePressed(){
+function mousePressed(){ //drag input for spinning earth
       earth.mX.initial = mouseX;
       earth.mY.initial = mouseY;
 };
@@ -158,6 +168,5 @@ function mouseReleased(){
 };
 
 function mouseWheel(event){
-      earth.zoomLevel -= event.delta;
-      console.log(earth.zoomLevel)
+      scale = scale - (event.delta/1000)
 };

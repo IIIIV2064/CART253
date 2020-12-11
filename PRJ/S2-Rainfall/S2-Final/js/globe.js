@@ -7,18 +7,19 @@ class Globe{
 
 constructor(){ //setting up base values for the globe
 
-      this.x = width/2;
-      this.y = height/2;
+      this.sphereSize = 300; //inital size
 
-      this.sphereSize;
-      this.strokeThick = 0.5;
+      this.strokeThick;
       this.strokeColor = {
         r:0,
         g:0,
         b:180,
       };
 
-      this.zoomLevel = 300;
+
+
+      this.scaledSize;
+      this.animationRate = 5;
       this.rotationRate = 0.005;
 
       this.mX ={
@@ -41,8 +42,8 @@ constructor(){ //setting up base values for the globe
 
 display(){
 
-      this.sphereSize =  constrain(this.zoomLevel,100,400);// decide the "zoom" level
-
+      this.scaledSize = this.sphereSize*constrain(scale,0.1,2);
+      this.strokeThick = map(volume,1,6,0.5,5,true);
 
       rotateY(this.mX.rotation); //make it spin!
       rotateX(this.mY.rotation);
@@ -53,7 +54,7 @@ display(){
       noFill();
 
       texture(mapTexture); //applying the map texture to the sphere
-      sphere(this.sphereSize);
+      sphere(this.scaledSize);
 
 }
 
