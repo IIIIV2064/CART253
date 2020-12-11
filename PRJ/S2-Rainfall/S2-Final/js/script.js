@@ -76,6 +76,8 @@ function mainScreen(){ //display the main screen
         text('click to see earth',0,0);
       pop();
 
+      explosions = [];
+
 };
 
 function simScreen(){ //display the simulation
@@ -91,10 +93,13 @@ function simScreen(){ //display the simulation
               exoVFX.bombVisual(explosions[i]);
             }
       }
+
+      bombCounting();
 };
 
 function endScreen(){ //display the end screen
       bgm.stop();
+      exoSFX.sirenSound();
 
       push();
         textAlign(CENTER);
@@ -108,20 +113,22 @@ function endScreen(){ //display the end screen
 //---------------------Mechanical Functions---------------------//
 
 function resetWorld(){ //reset when the simulation ends
+        exoSFX.siren.stop();
         state ='main';
 };
 
 function audioTrigger(){
+      level = 0;
       //triggers the explosion when pass a certain treshhold
       //and makes the lines 'vibrate'
 
-      explosionDetector.setInput(bgm);
+      explosionDetector.setInput(bgm); //set input to the background music
 
-      level = explosionDetector.getLevel();
-      volume = map(level,0.001,0.2,1,10,true);
+      level = explosionDetector.getLevel(); //get level
+      volume = map(level,0.001,0.2,1,10,true); //match the level to a readable scale
 
-      if(volume > 4.5){
-
+      if(volume > 4.5){ // the treshhold
+          bombDropping();
           earth.strokeColor.r = 250;
           earth.strokeColor.b = 0;
       };
@@ -136,6 +143,15 @@ function bombDropping(){ //setting the explosion in motion
       explosions.push(exoVFX);
 
       exoVFX.boom=true;
+
+
+};
+
+function bombCounting(){ //count how far til the end
+  if(explosions.length >= 10){
+    state = 'end';
+  }
+  console.log(explosions.length);
 };
 
 //-----------------------------User Inputs-----------------------------//
@@ -150,7 +166,6 @@ function mouseClicked(){ //main input: mouse click
           }else{
             bgm.play();
           };
-                    bombDropping();
       }else if( state === 'end'){ //clicking in end screen to reset
           resetWorld();
       }

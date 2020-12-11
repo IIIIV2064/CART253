@@ -10,6 +10,8 @@ class SFX{
 
           this.siren = new p5.Oscillator('sine');
 
+          this.changeValue = 0;
+          this.changeRate = 0.1;
 
     }
 
@@ -37,6 +39,7 @@ class SFX{
           this.siren.freq(sirenFreq,0.5); // I know it's a discordant siren,
           this.siren.amp(sirenAmp);// still trying to figure out the waves.
 
+          this.siren.start();
 
     }
 

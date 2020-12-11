@@ -8,8 +8,6 @@ class VFX extends Globe{
     constructor(){
         super();
 
-        this.positionY = random(-this.sphereSize,this.sphereSize);
-
 
         this.size = 0;
         this.maxSize = random(50,100);
@@ -30,7 +28,9 @@ class VFX extends Globe{
         push();
             stroke(this.color.r,this.color.g,this.color.b);
             noFill();
-            translate(0,0,this.scaledSize);
+            translate(random(-earth.scaledSize,earth.scaledSize),
+                      random(-earth.scaledSize,earth.scaledSize),
+                      random(-earth.scaledSize,earth.scaledSize));
             sphere(this.size);
         pop();
     }

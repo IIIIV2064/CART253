@@ -43,7 +43,7 @@ constructor(){ //setting up base values for the globe
 display(){
 
       this.scaledSize = this.sphereSize*constrain(scale,0.1,2);
-      this.strokeThick = map(volume,1,6,0.5,5,true);
+      this.strokeThick = map(volume,1,6,0.3,5,true);
 
       rotateY(this.mX.rotation); //make it spin!
       rotateX(this.mY.rotation);
